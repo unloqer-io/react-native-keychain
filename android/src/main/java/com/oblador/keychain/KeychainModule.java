@@ -45,11 +45,11 @@ public class KeychainModule extends ReactContextBaseJavaModule {
         prefsStorage = new PrefsStorage(reactContext);
         try {
           addCipherStorageToMap(new CipherStorageFacebookConceal(reactContext));
-        } catch(e) {
+        } catch(Exception e) {
         }
         try {
           addCipherStorageToMap(new CipherStorageKeystoreAESCBC());
-        } catch(e) {
+        } catch(Exception e) {
 
         }
 
