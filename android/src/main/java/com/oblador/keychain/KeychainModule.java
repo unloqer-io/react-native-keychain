@@ -43,13 +43,23 @@ public class KeychainModule extends ReactContextBaseJavaModule {
     public KeychainModule(ReactApplicationContext reactContext) {
         super(reactContext);
         prefsStorage = new PrefsStorage(reactContext);
+        try {
+          addCipherStorageToMap(new CipherStorageFacebookConceal(reactContext));
+        } catch(e) {
+        }
+        try {
+          addCipherStorageToMap(new CipherStorageKeystoreAESCBC());
+        } catch(e) {
 
-        addCipherStorageToMap(new CipherStorageFacebookConceal(reactContext));
-        addCipherStorageToMap(new CipherStorageKeystoreAESCBC());
+        }
+
     }
 
     private void addCipherStorageToMap(CipherStorage cipherStorage) {
-        cipherStorageMap.put(cipherStorage.getCipherStorageName(), cipherStorage);
+        try {
+          cipherStorageMap.put(cipherStorage.getCipherStorageName(), cipherStorage);
+        } catch(Exception e) {
+        }
     }
 
     @ReactMethod
@@ -72,6 +82,8 @@ public class KeychainModule extends ReactContextBaseJavaModule {
         } catch (CryptoFailedException e) {
             Log.e(KEYCHAIN_MODULE, e.getMessage());
             promise.reject(E_CRYPTO_FAILED, e);
+        } catch(Exception e) {
+            promise.reject(E_CRYPTO_FAILED, e);
         }
     }
 
@@ -85,7 +97,6 @@ public class KeychainModule extends ReactContextBaseJavaModule {
             final DecryptionResult decryptionResult;
             ResultSet resultSet = prefsStorage.getEncryptedEntry(service);
             if (resultSet == null) {
-                Log.e(KEYCHAIN_MODULE, "No entry found for service: " + service);
                 promise.resolve(false);
                 return;
             }
@@ -120,6 +131,8 @@ public class KeychainModule extends ReactContextBaseJavaModule {
         } catch (CryptoFailedException e) {
             Log.e(KEYCHAIN_MODULE, e.getMessage());
             promise.reject(E_CRYPTO_FAILED, e);
+        } catch (Exception e) {
+            promise.reject(E_CRYPTO_FAILED, e);
         }
     }
 
@@ -143,6 +156,8 @@ public class KeychainModule extends ReactContextBaseJavaModule {
         } catch (KeyStoreAccessException e) {
             Log.e(KEYCHAIN_MODULE, e.getMessage());
             promise.reject(E_KEYSTORE_ACCESS_ERROR, e);
+        } catch(Exception e) {
+            promise.reject(E_CRYPTO_FAILED, e);
         }
     }
 
